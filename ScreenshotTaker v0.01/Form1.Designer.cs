@@ -217,7 +217,7 @@
             // labelLogPath
             // 
             this.labelLogPath.AutoSize = true;
-            this.labelLogPath.BackColor = System.Drawing.Color.Cyan;
+            this.labelLogPath.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.labelLogPath.Location = new System.Drawing.Point(12, 152);
             this.labelLogPath.Name = "labelLogPath";
             this.labelLogPath.Size = new System.Drawing.Size(36, 13);
@@ -239,7 +239,7 @@
             // labelTimeCount
             // 
             this.labelTimeCount.AutoSize = true;
-            this.labelTimeCount.BackColor = System.Drawing.Color.Cyan;
+            this.labelTimeCount.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.labelTimeCount.Location = new System.Drawing.Point(242, 106);
             this.labelTimeCount.Name = "labelTimeCount";
             this.labelTimeCount.Size = new System.Drawing.Size(37, 13);
@@ -250,7 +250,7 @@
             // labelNextRunTime
             // 
             this.labelNextRunTime.AutoSize = true;
-            this.labelNextRunTime.BackColor = System.Drawing.Color.Cyan;
+            this.labelNextRunTime.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.labelNextRunTime.Location = new System.Drawing.Point(351, 106);
             this.labelNextRunTime.Name = "labelNextRunTime";
             this.labelNextRunTime.Size = new System.Drawing.Size(37, 13);
@@ -276,7 +276,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.ImeMode = System.Windows.Forms.ImeMode.On;
             this.Name = "Screenshot";
-            this.Text = "ScreenshotTaker V0.03";
+            this.Text = "ScreenshotTaker V0.04";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.KeyScreenShot);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownHour)).EndInit();

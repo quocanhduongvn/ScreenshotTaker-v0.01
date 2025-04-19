@@ -237,11 +237,21 @@ namespace ScreenshotTaker_v0._01
 
         private async void ScreenshotHideForm(int delay)
         {
-            this.Hide();
-             await Task.Delay(1000); // 1000 ms = 1 giây
+            bool wasVisible = this.Visible; // Lưu trạng thái hiển thị ban đầu
+
+            if (wasVisible)
+            {
+                this.Hide(); // Chỉ ẩn nếu form đang hiển thị
+                await Task.Delay(delay);
+            }
+
+             // Chờ thời gian delay (ms)
             ScreenShotAndSaveTo(logPicDirectory);
 
-            this.Show();
+            if (wasVisible)
+            {
+                this.Show(); // Chỉ hiển thị lại nếu form đã được ẩn bởi hàm này
+            }
         }
         private void ScreenShotAndSaveTo(string logPicDirectoryNew)
         {
@@ -377,64 +387,7 @@ namespace ScreenshotTaker_v0._01
                 }
             }
         }
-        private async Task ScreenshotLoop(TimeSpan timeOfDay, CancellationToken ct)
-        {
-
-            while (!ct.IsCancellationRequested)
-            {
-                DateTime now = DateTime.Now;
-                DateTime nextRun = DateTime.Today.Add(timeOfDay);
-
-                // Nếu thời gian đã qua hôm nay, lên lịch cho ngày mai
-                if (nextRun < now)
-                {
-                    nextRun = nextRun.AddDays(1);
-                }
-
-                // Tính thời gian chờ
-                TimeSpan waitTime = nextRun - now;
-
-                // Cập nhật giao diện (nếu cần)
-               // labelTimeCount.Text = waitTime.ToString(@"hh\:mm\:ss");
-
-                // Chờ đến thời gian đã chỉ định
-                await Task.Delay(waitTime);
-
-                // Kiểm tra lại yêu cầu hủy trước khi thực hiện chụp màn hình
-                if (!ct.IsCancellationRequested)
-                {
-                    btnScreenshotNow_Click(this, EventArgs.Empty);
-                   
-                }
-                /*
-
-                while (!ct.IsCancellationRequested)
-          
-            {
-                // Chờ cho đến thời gian đã chỉ định
-                DateTime now = DateTime.Now;
-                DateTime nextRun = DateTime.Today.Add(timeOfDay);labelNextRunTime
-
-                if (nextRun < now)
-                {
-                    nextRun = nextRun.AddDays(1); // Nếu thời gian đã qua, lên lịch cho ngày tiếp theo
-                }
-
-                TimeSpan waitTime = nextRun - now;
-               
-                await Task.Delay(waitTime); // Chờ đến thời gian đã chỉ định
-
-                if (!ct.IsCancellationRequested)
-                {
-                   
-                    btnScreenshotNow_Click(this, EventArgs.Empty);
-                    labelTimeCount.Text = waitTime.ToString();
-                }
-                */
-            }
-
-
-        }
+       
 
        
 
