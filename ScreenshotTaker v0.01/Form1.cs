@@ -23,8 +23,8 @@ namespace ScreenshotTaker_v0._01
         private List<CancellationTokenSource> ctsList = new List<CancellationTokenSource>();
         // Đường dẫn đến file CSV
         string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settime.csv");
+        private System.Windows.Forms.Timer clickTimer;
 
-        
         public Screenshot()
         {
             InitializeComponent();
@@ -139,7 +139,42 @@ namespace ScreenshotTaker_v0._01
         
 
         private void btnStartStop_Click(object sender, EventArgs e)
-        {   
+        {
+            if (isRunning) return;
+
+            try
+            {
+                // Đọc danh sách khung giờ từ CSVCHAN
+                List<TimeSpan> schedules = ReadSchedulesFromCsv(filePath);
+                if (schedules.Count == 0)
+                {
+                    MessageBox.Show("File CSV không chứa khung giờ hợp lệ.");
+                    return;
+                }
+
+                isRunning = true;
+                btnStartStop.Enabled = false;
+                btnStop.Enabled = true;
+                panelAdd.Enabled = false;
+                statusLabel.Text = "Đang Tự Chụp Màn Hình ...";
+                statusLabel.ForeColor = Color.Green;
+                BackColor = Color.Green;
+
+                // Khởi động ScreenshotLoop
+                var cts = new CancellationTokenSource();
+                ctsList.Add(cts);
+                _ = ScreenshotLoop(schedules, cts.Token);
+
+                // Khởi động timer cho click lúc 08:08
+                StartClickTimer();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi: " + ex.Message);
+                StopAll();
+            }
+
+            /*
             try
             {
                 List<TimeSpan> schedules = ReadSchedulesFromCsv(filePath);
@@ -162,24 +197,36 @@ namespace ScreenshotTaker_v0._01
             {
                 MessageBox.Show("Lỗi: " + ex.Message);
             }
+            */
         }
 
         private void btnStop_Click(object sender, EventArgs e)
         {
+            StopAll();
+        }
+        private void StopAll()
+        {
             foreach (var cts in ctsList)
             {
                 cts.Cancel();
+                cts.Dispose();
             }
             ctsList.Clear();
 
-            btnStartStop.Enabled = true; // Kích hoạt nút Start
-            btnStop.Enabled = false; // Vô hiệu hóa nút Stop
+            if (clickTimer != null)
+            {
+                clickTimer.Stop();
+                clickTimer.Dispose();
+                clickTimer = null;
+            }
 
-            // Hành động dừng
-            statusLabel.Text = "Đang Chờ...Setting";
-            statusLabel.ForeColor = Color.Gray;
-            BackColor = Color.Orange;
+            isRunning = false;
+            btnStartStop.Enabled = true;
+            btnStop.Enabled = false;
             panelAdd.Enabled = true;
+            statusLabel.Text = "Trạng Thái: Rảnh";
+            statusLabel.ForeColor = SystemColors.ControlText;
+            BackColor = SystemColors.Control;
         }
         private  void btnScreenshotNow_Click(object sender, EventArgs e)
         {
@@ -249,17 +296,124 @@ namespace ScreenshotTaker_v0._01
             }
             return schedules;
         }
+        private void StartClickTimer()
+        {
+            clickTimer = new System.Windows.Forms.Timer();
+            clickTimer.Tick += ClickTimer_Tick;
+            SetNextClickTimer();
+        }
 
+        private void SetNextClickTimer()
+        {
+            DateTime now = DateTime.Now;
+            DateTime targetTime = now.Date + new TimeSpan(8, 8, 0); // 08:08:00
+            if (targetTime < now)
+            {
+                targetTime = targetTime.AddDays(1);
+            }
+            TimeSpan delay = targetTime - now;
+            clickTimer.Interval = Math.Max(1, (int)delay.TotalMilliseconds);
+            clickTimer.Start();
+        }
+
+        private void ClickTimer_Tick(object sender, EventArgs e)
+        {
+            clickTimer.Stop();
+            btnScreenshotNow_Click(this, EventArgs.Empty);
+            clickTimer.Interval = 86400000; // 24 giờ
+            clickTimer.Start();
+        }
+
+        private async Task ScreenshotLoop(List<TimeSpan> timeOfDays, CancellationToken ct)
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                DateTime now = DateTime.Now;
+                DateTime? nextRun = null;
+                TimeSpan minWaitTime = TimeSpan.MaxValue;
+
+                // Tìm khung giờ gần nhất
+                foreach (var timeOfDay in timeOfDays)
+                {
+                    DateTime candidate = DateTime.Today.Add(timeOfDay);
+                    if (candidate < now)
+                    {
+                        candidate = candidate.AddDays(1);
+                    }
+                    TimeSpan waitTime = candidate - now;
+                    if (waitTime < minWaitTime)
+                    {
+                        minWaitTime = waitTime;
+                        nextRun = candidate;
+                    }
+                }
+
+                if (nextRun.HasValue)
+                {
+                    // Cập nhật giao diện
+                    this.Invoke((Action)(() =>
+                    {
+                        labelTimeCount.Text = minWaitTime.ToString(@"hh\:mm\:ss");
+                        labelNextRunTime.Text = nextRun.Value.ToString("hh:mm:ss tt");
+                    }));
+
+                    // Chờ đến khung giờ gần nhất
+                    try
+                    {
+                        await Task.Delay(minWaitTime, ct);
+                        if (!ct.IsCancellationRequested)
+                        {
+                            this.Invoke((Action)(() => btnScreenshotNow_Click(this, EventArgs.Empty)));
+                        }
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    await Task.Delay(1000, ct);
+                }
+            }
+        }
         private async Task ScreenshotLoop(TimeSpan timeOfDay, CancellationToken ct)
         {
-           // MessageBox.Show("Vong lap bat dau");
 
             while (!ct.IsCancellationRequested)
+            {
+                DateTime now = DateTime.Now;
+                DateTime nextRun = DateTime.Today.Add(timeOfDay);
+
+                // Nếu thời gian đã qua hôm nay, lên lịch cho ngày mai
+                if (nextRun < now)
+                {
+                    nextRun = nextRun.AddDays(1);
+                }
+
+                // Tính thời gian chờ
+                TimeSpan waitTime = nextRun - now;
+
+                // Cập nhật giao diện (nếu cần)
+               // labelTimeCount.Text = waitTime.ToString(@"hh\:mm\:ss");
+
+                // Chờ đến thời gian đã chỉ định
+                await Task.Delay(waitTime);
+
+                // Kiểm tra lại yêu cầu hủy trước khi thực hiện chụp màn hình
+                if (!ct.IsCancellationRequested)
+                {
+                    btnScreenshotNow_Click(this, EventArgs.Empty);
+                   
+                }
+                /*
+
+                while (!ct.IsCancellationRequested)
           
             {
                 // Chờ cho đến thời gian đã chỉ định
                 DateTime now = DateTime.Now;
-                DateTime nextRun = DateTime.Today.Add(timeOfDay);
+                DateTime nextRun = DateTime.Today.Add(timeOfDay);labelNextRunTime
 
                 if (nextRun < now)
                 {
@@ -276,6 +430,7 @@ namespace ScreenshotTaker_v0._01
                     btnScreenshotNow_Click(this, EventArgs.Empty);
                     labelTimeCount.Text = waitTime.ToString();
                 }
+                */
             }
 
 

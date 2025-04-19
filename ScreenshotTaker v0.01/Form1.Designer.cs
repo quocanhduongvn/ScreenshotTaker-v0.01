@@ -48,6 +48,7 @@
             this.labelLogPath = new System.Windows.Forms.Label();
             this.btnStop = new System.Windows.Forms.Button();
             this.labelTimeCount = new System.Windows.Forms.Label();
+            this.labelNextRunTime = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownHour)).BeginInit();
             this.panelAdd.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMin)).BeginInit();
@@ -238,18 +239,31 @@
             // labelTimeCount
             // 
             this.labelTimeCount.AutoSize = true;
-            this.labelTimeCount.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTimeCount.Location = new System.Drawing.Point(242, 102);
+            this.labelTimeCount.BackColor = System.Drawing.Color.Cyan;
+            this.labelTimeCount.Location = new System.Drawing.Point(242, 106);
             this.labelTimeCount.Name = "labelTimeCount";
-            this.labelTimeCount.Size = new System.Drawing.Size(47, 18);
+            this.labelTimeCount.Size = new System.Drawing.Size(37, 13);
             this.labelTimeCount.TabIndex = 17;
-            this.labelTimeCount.Text = "Hello";
+            this.labelTimeCount.Text = "00000";
+            this.labelTimeCount.UseMnemonic = false;
+            // 
+            // labelNextRunTime
+            // 
+            this.labelNextRunTime.AutoSize = true;
+            this.labelNextRunTime.BackColor = System.Drawing.Color.Cyan;
+            this.labelNextRunTime.Location = new System.Drawing.Point(351, 106);
+            this.labelNextRunTime.Name = "labelNextRunTime";
+            this.labelNextRunTime.Size = new System.Drawing.Size(37, 13);
+            this.labelNextRunTime.TabIndex = 18;
+            this.labelNextRunTime.Text = "00000";
+            this.labelNextRunTime.UseMnemonic = false;
             // 
             // Screenshot
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(558, 174);
+            this.Controls.Add(this.labelNextRunTime);
             this.Controls.Add(this.labelTimeCount);
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.labelLogPath);
@@ -258,10 +272,11 @@
             this.Controls.Add(this.listBoxTime);
             this.Controls.Add(this.btnHide);
             this.Controls.Add(this.panelAdd);
+            this.Cursor = System.Windows.Forms.Cursors.AppStarting;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.ImeMode = System.Windows.Forms.ImeMode.On;
             this.Name = "Screenshot";
-            this.Text = "ScreenshotTaker V0.02";
+            this.Text = "ScreenshotTaker V0.03";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.KeyScreenShot);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownHour)).EndInit();
@@ -292,6 +307,7 @@
         private System.Windows.Forms.Button btnFolderPath;
         private System.Windows.Forms.Button btnStop;
         private System.Windows.Forms.Label labelTimeCount;
+        private System.Windows.Forms.Label labelNextRunTime;
     }
 }
 
