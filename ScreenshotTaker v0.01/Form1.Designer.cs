@@ -239,7 +239,7 @@
             // 
             this.labelTimeCount.AutoSize = true;
             this.labelTimeCount.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTimeCount.Location = new System.Drawing.Point(12, 180);
+            this.labelTimeCount.Location = new System.Drawing.Point(242, 102);
             this.labelTimeCount.Name = "labelTimeCount";
             this.labelTimeCount.Size = new System.Drawing.Size(47, 18);
             this.labelTimeCount.TabIndex = 17;
@@ -249,7 +249,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(549, 207);
+            this.ClientSize = new System.Drawing.Size(558, 174);
             this.Controls.Add(this.labelTimeCount);
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.labelLogPath);

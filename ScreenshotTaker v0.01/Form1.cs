@@ -176,9 +176,9 @@ namespace ScreenshotTaker_v0._01
             btnStop.Enabled = false; // Vô hiệu hóa nút Stop
 
             // Hành động dừng
-            statusLabel.Text = "Đang Chờ";
+            statusLabel.Text = "Đang Chờ...Setting";
             statusLabel.ForeColor = Color.Gray;
-            BackColor = Color.Gray;
+            BackColor = Color.Orange;
             panelAdd.Enabled = true;
         }
         private  void btnScreenshotNow_Click(object sender, EventArgs e)
@@ -267,13 +267,14 @@ namespace ScreenshotTaker_v0._01
                 }
 
                 TimeSpan waitTime = nextRun - now;
-               labelTimeCount.Text = waitTime.ToString();
+               
                 await Task.Delay(waitTime); // Chờ đến thời gian đã chỉ định
 
                 if (!ct.IsCancellationRequested)
                 {
                    
                     btnScreenshotNow_Click(this, EventArgs.Empty);
+                    labelTimeCount.Text = waitTime.ToString();
                 }
             }
 
