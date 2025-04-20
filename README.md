@@ -1,0 +1,1 @@
+# ScreenshotTaker v0.01
