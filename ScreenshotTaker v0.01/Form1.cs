@@ -267,7 +267,7 @@ namespace ScreenshotTaker_v0._01
                 }
 
                 TimeSpan waitTime = nextRun - now;
-               
+               labelTimeCount.Text = waitTime.ToString();
                 await Task.Delay(waitTime); // Chờ đến thời gian đã chỉ định
 
                 if (!ct.IsCancellationRequested)
